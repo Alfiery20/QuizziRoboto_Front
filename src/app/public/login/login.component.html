@@ -1,0 +1,40 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card m-2">
+                <div class="card-header">Inicio de Sesión</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="camera-container container text-center">
+                            <webcam *ngIf="showCamera" [height]="cameraHeight" [width]="cameraWidth"
+                                [trigger]="triggerObservable" (imageCapture)="captureImage($event)"></webcam>
+                        </div>
+                        <div class="container d-flex justify-content-center mt-3">
+                            <button class="btn btn-primary m-2" (click)="toggleCamera()">
+                                {{textButton}}
+                            </button>
+                            <button *ngIf="showCamera" class="btn btn-primary m-2" (click)="takePhoto()">
+                                Tomar Foto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card m-2" *ngIf="capturedImage">
+                <div class="card-header">Imagen Tomada</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="container d-flex justify-content-center mt-3">
+                            <img [src]="capturedImage!.imageAsDataUrl" [height]="cameraHeight" [width]="cameraWidth"
+                                alt="Captured Image">
+                        </div>
+                        <div class="container d-flex justify-content-center mt-3">
+                            <button class="btn btn-primary m-2" (click)="toggleCamera()">
+                                {{'Iniciar Sesion'}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
