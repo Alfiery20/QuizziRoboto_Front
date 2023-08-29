@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { WebcamImage } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-
   public showCamera = false;
   public cameraHeight = 200;
   public cameraWidth = 350;
@@ -18,9 +18,15 @@ export class LoginComponent {
 
   private trigger: Subject<void> = new Subject<void>();
 
-  toggleCamera(){
+  constructor(private route: Router) {}
+
+  toggleCamera() {
     this.showCamera = !this.showCamera;
     this.textButton = this.showCamera ? 'Cerrar Camara' : 'Mostrar Camara';
+  }
+
+  inicioSesion() {
+    this.route.navigate(['/inicio']);
   }
 
   takePhoto(): void {

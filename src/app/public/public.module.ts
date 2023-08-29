@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { WebcamModule } from 'ngx-webcam';
-
-
+import { PublicRoutingModule } from './public-routing.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +12,8 @@ import { WebcamModule } from 'ngx-webcam';
   ],
   imports: [
     CommonModule,
-    WebcamModule
+    WebcamModule,
+    PublicRoutingModule
   ],
   exports:[
     LoginComponent,

@@ -1,0 +1,13 @@
+.background {
+  background-image: url(../.././../assets/background.jpg);
+  background-color: lightblue;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle{
+  border-radius: 50%;
+}
