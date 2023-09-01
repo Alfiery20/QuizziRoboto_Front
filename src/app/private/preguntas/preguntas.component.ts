@@ -1,19 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { read } from '@popperjs/core';
 import { timeout } from 'rxjs';
 import { PreguntaRequest, PreguntaResponse } from 'src/app/interfaces/pregunta';
+import { VerificacionRespuesta } from 'src/app/interfaces/respuesta';
 import { PreguntaService } from 'src/app/services/pregunta.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-preguntas',
   templateUrl: './preguntas.component.html',
   styleUrls: ['./preguntas.component.scss'],
 })
-export class PreguntasComponent {
+export class PreguntasComponent implements OnInit {
   pregunta: PreguntaResponse = { id: 0, enunciado: '', audio: '' };
   respuesta: PreguntaRequest = { id: 0, respuesta: '' };
+  verificacion: VerificacionRespuesta = { BD: '', CORRECTO: false, IA: '' };
 
-  tiempoGrabacion: number = 5000;
+  tiempoGrabacion: number = 3000;
 
   record: boolean = true;
   mediaRecorder: MediaRecorder | null = null;
@@ -22,10 +25,18 @@ export class PreguntasComponent {
 
   constructor(private serv: PreguntaService) {}
 
+  ngOnInit(): void {
+    console.log(this.pregunta);
+    console.log(this.respuesta);
+    console.log(this.verificacion);
+
+    this.verificacion = { BD: '', CORRECTO: false, IA: '' };
+  }
+
   getPregunta() {
     this.serv.obtenerPregunta().subscribe((resp) => {
       this.pregunta = resp;
-      console.table(this.pregunta)
+      console.table(this.pregunta);
     });
     setTimeout(() => {
       this.convertBase64ToFile(this.pregunta.audio);
@@ -64,11 +75,28 @@ export class PreguntasComponent {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
         this.audio = new Audio(audioUrl);
-        // this.audio.play();
+
         this.convertAudioToBase64(audioUrl).then((base64Audio) => {
-          this.respuesta.respuesta = base64Audio as string;
+          this.respuesta.respuesta = (base64Audio as string).substring(22);
         });
-        console.table(this.respuesta)
+
+        console.log(this.respuesta);
+
+
+        this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
+          console.log(resp);
+          this.verificacion = resp;
+        });
+        Swal.fire(
+          this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
+          this.verificacion.CORRECTO
+            ? 'Te felicito, lo hiciste increible!'
+            : 'Parece que te equivocaste, la respuesta correcta es : ' +
+                this.verificacion.BD +
+                ' y haz respondido: ' +
+                this.verificacion.IA,
+          this.verificacion.CORRECTO ? 'success' : 'error'
+        );
       };
 
       this.record = !this.record;

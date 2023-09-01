@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
-import { PreguntaResponse } from '../interfaces/pregunta';
+import { PreguntaResponse, PreguntaRequest } from '../interfaces/pregunta';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -12,12 +12,18 @@ export class PreguntaService {
 
   obtenerPregunta() {
     const url = environment.base_url + '/getPregunta';
-    console.log(url);
-
-    return this.http.get(url)
-    .pipe(
+    return this.http.get(url).pipe(
       map((resp: any) => {
-        return resp
+        return resp;
+      })
+    );
+  }
+
+  verificarRespuesta(pregunta: PreguntaRequest) {
+    const url = environment.base_url + '/setRespuesta';
+    return this.http.post(url, pregunta).pipe(
+      map((resp: any) => {
+        return resp;
       })
     );
   }
