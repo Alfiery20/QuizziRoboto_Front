@@ -3,6 +3,7 @@ import { read } from '@popperjs/core';
 import { timeout } from 'rxjs';
 import { PreguntaRequest, PreguntaResponse } from 'src/app/interfaces/pregunta';
 import { VerificacionRespuesta } from 'src/app/interfaces/respuesta';
+import { User } from 'src/app/interfaces/user';
 import { PreguntaService } from 'src/app/services/pregunta.service';
 import Swal from 'sweetalert2';
 
@@ -18,6 +19,8 @@ export class PreguntasComponent implements OnInit {
 
   tiempoGrabacion: number = 3000;
 
+
+  nombre: User = { id: 0, nom: '' };
   record: boolean = true;
   mediaRecorder: MediaRecorder | null = null;
   audioChunks: Blob[] = [];
@@ -25,13 +28,14 @@ export class PreguntasComponent implements OnInit {
 
   loader: boolean = false;
 
-  constructor(private serv: PreguntaService) {}
+  constructor(private serv: PreguntaService) { }
 
   ngOnInit(): void {
     console.log(this.pregunta);
     console.log(this.respuesta);
     console.log(this.verificacion);
     this.verificacion = { BD: '', CORRECTO: false, IA: '' };
+    this.nombre = JSON.parse(localStorage.getItem('user')!);
   }
 
   async getPregunta() {
@@ -63,11 +67,11 @@ export class PreguntasComponent implements OnInit {
       Swal.fire(
         this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
         this.verificacion.CORRECTO
-          ? 'Te felicito, lo hiciste increible!'
+          ? 'Te felicito ' + this.nombre.nom + ', lo hiciste increible!'
           : 'Parece que te equivocaste, la respuesta correcta es : ' +
-              this.verificacion.BD +
-              ' y haz respondido: ' +
-              this.verificacion.IA,
+          this.verificacion.BD +
+          ' y haz respondido: ' +
+          this.verificacion.IA,
         this.verificacion.CORRECTO ? 'success' : 'error'
       );
     }, 1000);

@@ -40,14 +40,14 @@ export class LoginComponent {
     this.login.foto = FotoTomadaBase64;
     this.serv.login(this.login).subscribe((resp) => {
       const bandera: number = resp["id"]
-      console.log('Logeado: ', bandera);
-
-      if(bandera != -1){
+      const nombre: string = resp["nom"]
+      localStorage.setItem("user", JSON.stringify(resp));
+      if (bandera != -1) {
         this.route.navigate(['inicio'])
       }
-      
+
       Swal.fire({
-        title: bandera == -1 ? 'Ups...' : 'Bienvenido :3',
+        title: bandera == -1 ? 'Ups...' : 'Bienvenido ' + nombre + ' :3',
         text: bandera == -1 ? 'Registrate para poder empezar a aprender' : 'Empecemos a aprender',
         icon: bandera == -1 ? 'warning' : 'success',
         showCancelButton: bandera == -1 ? true : false,

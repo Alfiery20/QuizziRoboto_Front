@@ -6,3 +6,8 @@ export interface Register {
     nom: string;
     foto: string;
 }
+
+export interface User {
+    id: number;
+    nom: string;
+}
