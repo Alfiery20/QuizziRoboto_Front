@@ -23,34 +23,57 @@ export class PreguntasComponent implements OnInit {
   audioChunks: Blob[] = [];
   audio = new Audio();
 
+  loader: boolean = false;
+
   constructor(private serv: PreguntaService) {}
 
   ngOnInit(): void {
     console.log(this.pregunta);
     console.log(this.respuesta);
     console.log(this.verificacion);
-
     this.verificacion = { BD: '', CORRECTO: false, IA: '' };
   }
 
-  getPregunta() {
+  async getPregunta() {
+    this.loader = true;
     this.serv.obtenerPregunta().subscribe((resp) => {
       this.pregunta = resp;
-      console.table(this.pregunta);
     });
     setTimeout(() => {
       this.convertBase64ToFile(this.pregunta.audio);
       this.respuesta.id = this.pregunta.id;
+      this.loader = false;
       return this.pregunta;
-    }, 2000);
+    }, 1000);
   }
 
   recordToogle() {
     this.record = !this.record;
-    this.recordAndPlayAudio();
+    this.recibirRespuesta();
   }
 
-  async recordAndPlayAudio(): Promise<void> {
+  validarRespuesta() {
+    this.loader = true;
+    this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
+      this.verificacion = resp;
+      console.log('VERIFICACION', this.verificacion);
+      this.loader = false;
+    });
+    setTimeout(() => {
+      Swal.fire(
+        this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
+        this.verificacion.CORRECTO
+          ? 'Te felicito, lo hiciste increible!'
+          : 'Parece que te equivocaste, la respuesta correcta es : ' +
+              this.verificacion.BD +
+              ' y haz respondido: ' +
+              this.verificacion.IA,
+        this.verificacion.CORRECTO ? 'success' : 'error'
+      );
+    }, 1000);
+  }
+
+  async recibirRespuesta(): Promise<void> {
     try {
       const audioStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -78,27 +101,9 @@ export class PreguntasComponent implements OnInit {
 
         this.convertAudioToBase64(audioUrl).then((base64Audio) => {
           this.respuesta.respuesta = (base64Audio as string).substring(22);
+          this.validarRespuesta();
         });
-
-        console.log(this.respuesta);
-
-
-        this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
-          console.log(resp);
-          this.verificacion = resp;
-        });
-        Swal.fire(
-          this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
-          this.verificacion.CORRECTO
-            ? 'Te felicito, lo hiciste increible!'
-            : 'Parece que te equivocaste, la respuesta correcta es : ' +
-                this.verificacion.BD +
-                ' y haz respondido: ' +
-                this.verificacion.IA,
-          this.verificacion.CORRECTO ? 'success' : 'error'
-        );
       };
-
       this.record = !this.record;
     } catch (error) {
       console.error('Error al grabar y reproducir audio:', error);

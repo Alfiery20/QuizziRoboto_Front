@@ -1,0 +1,27 @@
+/* loading-screen.component.css o loading-screen.component.scss */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+  opacity: 1; /* Valor de opacidad inicial */
+  transition: opacity 0.5s; /* Transición de opacidad durante 0.5 segundos */
+}
+
+.spinner-container {
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.custom-spinner {
+  width: 4rem; /* Ajusta el ancho del spinner según tus necesidades */
+  height: 4rem; /* Ajusta la altura del spinner según tus necesidades */
+}

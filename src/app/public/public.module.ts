@@ -4,6 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { WebcamModule } from 'ngx-webcam';
 import { PublicRoutingModule } from './public-routing.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { PublicRoutingModule } from './public-routing.module';
   imports: [
     CommonModule,
     WebcamModule,
-    PublicRoutingModule
+    PublicRoutingModule,
+    SharedModule
   ],
   exports:[
     LoginComponent,
