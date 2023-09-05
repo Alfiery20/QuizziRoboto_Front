@@ -56,14 +56,11 @@ export class PreguntasComponent implements OnInit {
     this.recibirRespuesta();
   }
 
-  validarRespuesta() {
+  async validarRespuesta() {
     this.loader = true;
-    this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
+    await this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
       this.verificacion = resp;
-      console.log('VERIFICACION', this.verificacion);
       this.loader = false;
-    });
-    setTimeout(() => {
       Swal.fire(
         this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
         this.verificacion.CORRECTO
@@ -74,7 +71,10 @@ export class PreguntasComponent implements OnInit {
           this.verificacion.IA,
         this.verificacion.CORRECTO ? 'success' : 'error'
       );
-    }, 1000);
+    });
+    // setTimeout(() => {
+      
+    // }, 7000);
   }
 
   async recibirRespuesta(): Promise<void> {
@@ -105,7 +105,9 @@ export class PreguntasComponent implements OnInit {
 
         this.convertAudioToBase64(audioUrl).then((base64Audio) => {
           this.respuesta.respuesta = (base64Audio as string).substring(22);
-          this.validarRespuesta();
+          setTimeout(() => {
+            this.validarRespuesta();
+          }, 1500);
         });
       };
       this.record = !this.record;
