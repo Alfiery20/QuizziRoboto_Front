@@ -31,9 +31,6 @@ export class PreguntasComponent implements OnInit {
   constructor(private serv: PreguntaService) { }
 
   ngOnInit(): void {
-    console.log(this.pregunta);
-    console.log(this.respuesta);
-    console.log(this.verificacion);
     this.verificacion = { BD: '', CORRECTO: false, IA: '' };
     this.nombre = JSON.parse(localStorage.getItem('user')!);
   }
@@ -73,7 +70,7 @@ export class PreguntasComponent implements OnInit {
       );
     });
     // setTimeout(() => {
-      
+
     // }, 7000);
   }
 
