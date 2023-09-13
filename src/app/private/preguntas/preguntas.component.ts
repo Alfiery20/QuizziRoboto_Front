@@ -15,10 +15,14 @@ import Swal from 'sweetalert2';
 export class PreguntasComponent implements OnInit {
   pregunta: PreguntaResponse = { id: 0, enunciado: '', audio: '' };
   respuesta: PreguntaRequest = { id: 0, respuesta: '' };
-  verificacion: VerificacionRespuesta = { BD: '', CORRECTO: false, IA: '' };
+  verificacion: VerificacionRespuesta = {
+    BD: '',
+    CORRECTO: false,
+    IA: '',
+    DISTANCIA: '',
+  };
 
   tiempoGrabacion: number = 3000;
-
 
   nombre: User = { id: 0, nom: '' };
   record: boolean = true;
@@ -28,10 +32,10 @@ export class PreguntasComponent implements OnInit {
 
   loader: boolean = false;
 
-  constructor(private serv: PreguntaService) { }
+  constructor(private serv: PreguntaService) {}
 
   ngOnInit(): void {
-    this.verificacion = { BD: '', CORRECTO: false, IA: '' };
+    this.verificacion = { BD: '', CORRECTO: false, IA: '', DISTANCIA: '' };
     this.nombre = JSON.parse(localStorage.getItem('user')!);
   }
 
@@ -39,13 +43,11 @@ export class PreguntasComponent implements OnInit {
     this.loader = true;
     this.serv.obtenerPregunta().subscribe((resp) => {
       this.pregunta = resp;
-    });
-    setTimeout(() => {
       this.convertBase64ToFile(this.pregunta.audio);
       this.respuesta.id = this.pregunta.id;
       this.loader = false;
       return this.pregunta;
-    }, 1000);
+    });
   }
 
   recordToogle() {
@@ -53,25 +55,29 @@ export class PreguntasComponent implements OnInit {
     this.recibirRespuesta();
   }
 
-  async validarRespuesta() {
+  validarRespuesta() {
     this.loader = true;
-    await this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
+    console.log('Loader en true');
+    this.serv.verificarRespuesta(this.respuesta).subscribe((resp) => {
       this.verificacion = resp;
+      console.log('Loader en false');
       this.loader = false;
       Swal.fire(
         this.verificacion.CORRECTO ? 'Respuesta correcta!' : 'Ups :c',
         this.verificacion.CORRECTO
-          ? 'Te felicito ' + this.nombre.nom + ', lo hiciste increible!'
+          ? 'Te felicito ' +
+              this.nombre.nom +
+              ', lo hiciste increible! ' +
+              (this.verificacion.DISTANCIA == '4'
+                ? 'No olvides recargar la bandeja de premios para continuar'
+                : '')
           : 'Parece que te equivocaste, la respuesta correcta es : ' +
-          this.verificacion.BD +
-          ' y haz respondido: ' +
-          this.verificacion.IA,
+              this.verificacion.BD +
+              ' y haz respondido: ' +
+              this.verificacion.IA,
         this.verificacion.CORRECTO ? 'success' : 'error'
       );
     });
-    // setTimeout(() => {
-
-    // }, 7000);
   }
 
   async recibirRespuesta(): Promise<void> {
@@ -96,6 +102,7 @@ export class PreguntasComponent implements OnInit {
       mediaRecorder.stop();
 
       mediaRecorder.onstop = () => {
+        this.loader = true;
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
         this.audio = new Audio(audioUrl);
